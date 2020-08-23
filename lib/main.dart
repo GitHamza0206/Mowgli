@@ -1,6 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mowgli_app/LoginScreen.dart';
 import 'HomePage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+FirebaseAuth _auth = FirebaseAuth.instance;
+getCurrentUser() async {
+  FirebaseUser user = await _auth.currentUser();
+  print(user.uid);
+  if (user != null) {
+    print(user.uid);
+    print(user.phoneNumber);
+    return runApp(new MaterialApp(
+        home: new Home(
+      user: user,
+    )));
+  } else {
+    return runApp(new MaterialApp(home: new LoginPage()));
+  }
+}
 
 void main() {
   runApp(new MaterialApp(home: new Home()));

@@ -10,6 +10,8 @@ import 'AddCommande.dart';
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
+  FirebaseUser user;
+  Home({this.user});
 }
 
 class _HomeState extends State<Home> {
@@ -71,7 +73,7 @@ class _HomeState extends State<Home> {
           actions: <Widget>[
             new IconButton(
                 icon: new Icon(Icons.search),
-                onPressed: () => debugPrint('hey')),
+                onPressed: () => debugPrint('hry')),
             new IconButton(
                 icon: new Icon(Icons.add), onPressed: () => goToAdd())
           ],
@@ -133,52 +135,54 @@ class _HomeState extends State<Home> {
                     return new ListView.builder(
                       itemCount: snapshot.data.documents.length,
                       itemBuilder: (context, index) {
-                        return new Card(
-                          elevation: 0.0,
-                          color: Colors.transparent.withOpacity(0.1),
-                          margin: EdgeInsets.all(10.0),
-                          child: new Container(
-                            padding: EdgeInsets.all(10.0),
-                            child: new Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                new CircleAvatar(
-                                  child: new Text('Z'),
-                                  //new Text(snapshot.data.documents[index]['title'][0]),
-                                  backgroundColor: Colors.yellow,
-                                  foregroundColor: Colors.black,
-                                ),
-                                new SizedBox(
-                                  width: 12.0,
-                                ),
-                                new Container(
-                                  width: 210.0,
-                                  child: new Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      new InkWell(
-                                        child: new Text(
-                                          snapshot.data.documents[index]
-                                              ['nbPhone'],
-                                          style: TextStyle(
-                                            fontSize: 22.0,
-                                            color: Colors.white,
-                                          ),
-                                          maxLines: 1,
-                                        ),
-                                        onTap: () {
-                                          passDataCollection(collection);
-                                          //passData(snapshot.data.documents[index]);
-                                        },
-                                      )
-                                    ],
+                        if (snapshot.data.documents[index] != null) {
+                          return new Card(
+                            elevation: 0.0,
+                            color: Colors.transparent.withOpacity(0.1),
+                            margin: EdgeInsets.all(10.0),
+                            child: new Container(
+                              padding: EdgeInsets.all(10.0),
+                              child: new Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  new CircleAvatar(
+                                    child: new Text('Z'),
+                                    //new Text(snapshot.data.documents[index]['title'][0]),
+                                    backgroundColor: Colors.yellow,
+                                    foregroundColor: Colors.black,
                                   ),
-                                )
-                              ],
+                                  new SizedBox(
+                                    width: 12.0,
+                                  ),
+                                  new Container(
+                                    width: 210.0,
+                                    child: new Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        new InkWell(
+                                          child: new Text(
+                                            snapshot.data.documents[index]
+                                                ['nbPhone'],
+                                            style: TextStyle(
+                                              fontSize: 22.0,
+                                              color: Colors.white,
+                                            ),
+                                            maxLines: 1,
+                                          ),
+                                          onTap: () {
+                                            passDataCollection(collection);
+                                            //passData(snapshot.data.documents[index]);
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                     );
                   }

@@ -17,8 +17,24 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _codeController = TextEditingController();
 
+  createDb(FirebaseUser user, String phoneNb, String name) async {
+    String _role = "user";
+    if (phoneNb == '+212619109287') {
+      _role = "admin";
+    }
+
+    final db = Firestore.instance.collection('Commandes').document(user.uid);
+
+    db
+        .setData({'nom': name, 'nbPhone': phoneNb, 'role': _role})
+        .then((value) => print('user created' + user.uid))
+        .whenComplete(() =>
+            {db.collection('DetailCommande').document('Commande1').setData({})})
+        .then((value) => print('all created'));
+  }
+
   navigationPush(phone) {
-    if (phone == '+212619109287') {
+    if (phone == "+212637991102") {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -33,7 +49,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<bool> loginUser(String phone, BuildContext context) async {
+  Future<bool> loginUser(
+      String phone, BuildContext context, String name) async {
     FirebaseAuth _auth = FirebaseAuth.instance;
     _auth.verifyPhoneNumber(
         phoneNumber: phone,
@@ -50,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                   builder: (context) => Home(),
                 ));*/
             navigationPush(phone);
+            createDb(user, phone, name);
           } else {
             print('Error');
           }
@@ -94,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                                 builder: (context) => Home(),
                               ));*/
                           navigationPush(phone);
+                          createDb(user, phone, name);
                         } else {
                           print('error');
                         }
@@ -111,35 +130,6 @@ class _LoginPageState extends State<LoginPage> {
     // Clean up the controller when the widget is disposed.
     nbPhone_user.dispose();
     super.dispose();
-  }
-
-  toHomePage(nbPhone_user) {
-    if (nbPhone_user == '0619109287') {
-      Navigator.of(context)
-          .push(new MaterialPageRoute(builder: (context) => Home()));
-    } else {
-      Navigator.of(context)
-          .push(new MaterialPageRoute(builder: (context) => CommandePage()));
-    }
-  }
-
-  void subscribe(name, phoneNb) {
-    String _role = "user";
-    if (phoneNb == '+212619109287') {
-      _role = "admin";
-    }
-
-    final _firestore = Firestore.instance
-        .collection('Commandes')
-        .add({'nom': name, 'nbPhone': phoneNb, 'role': _role}).then(
-            (value) => print('user created'));
-
-    Firestore.instance
-        .collection('Commandes')
-        .document()
-        .collection('DetailCommande')
-        .document()
-        .setData({});
   }
 
   String phoneNumber;
@@ -215,8 +205,9 @@ class _LoginPageState extends State<LoginPage> {
                                       /*Scaffold.of(context).showSnackBar(
                                           SnackBar(content: Text('Bienvenue')));*/
                                       //authenticate(name_user.text, nbPhone_user.text);
-                                      loginUser(phoneNumber, context);
-                                      subscribe(name_user.text, phoneNumber);
+                                      loginUser(
+                                          phoneNumber, context, name_user.text);
+                                      //subscribe(name_user.text, phoneNumber);
                                     }
                                   }))
                         ],

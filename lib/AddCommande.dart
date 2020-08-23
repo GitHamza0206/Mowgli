@@ -14,28 +14,29 @@ class _CommandePageState extends State<CommandePage> {
   String input = "";
   String quantite = "";
 
+  final _article_name = new TextEditingController();
+
   List todos = [];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   dynamic data;
 
-  Future<dynamic> getData() async {
+  getData() async {
     final FirebaseUser user = await auth.currentUser();
     List<dynamic> _articleList;
-    final DocumentReference document = Firestore.instance
+    final document = await Firestore.instance
         .collection('Commandes')
         .document(user.uid)
         .collection('DetailCommande')
-        .document('pmqEDtKcbsGtb0FSaBBB');
-    await document.get().then<dynamic>((DocumentSnapshot snapshot) async {
-      setState(() {
-        data = snapshot.data;
-        for (final _article in data['articles']) {
-          print(_article['nom_article']);
-          _articleList.add(_article['nom_article']);
+        .snapshots()
+        .last;
+    if (document != null) {
+      for (final elem in document.documents) {
+        for (final _article in elem['articles']) {
+          todos.add(_article['nom_article']);
         }
-      });
-    });
+      }
+    }
   }
 
   @override
@@ -48,10 +49,24 @@ class _CommandePageState extends State<CommandePage> {
     final FirebaseUser user = await auth.currentUser();
     final uid = user.uid;
     print(uid);
-    Firestore.instance
+    final _snap = Firestore.instance
         .collection('Commandes')
         .document(user.uid)
-        .updateData({'nbPhone': user.phoneNumber, 'nom': 'Zineb'});
+        .collection('DetailCommande')
+        .document('Commande1')
+        .setData({
+      'articles': FieldValue.arrayRemove([
+        {'nom_article': 'Hamza'}
+      ])
+    });
+
+/*
+    await _snap.forEach((snapshot) async {
+      List<DocumentSnapshot> documents = snapshot.documents;
+      for(var document in documents){
+        await document.data.update('done', (value) => return 'yes');
+      }
+    });*/
   }
 
   @override
@@ -133,6 +148,7 @@ class _CommandePageState extends State<CommandePage> {
                       TextField(
                         decoration: InputDecoration(labelText: 'Votre Article'),
                         onChanged: (String value) => {input = value},
+                        controller: _article,
                       ),
                       TextField(
                         decoration: InputDecoration(labelText: 'Quantité'),
